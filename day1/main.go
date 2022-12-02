@@ -37,7 +37,7 @@ func Day2(caloriesPerElf []int, nElves int) {
 }
 
 func getInput(path string) (string, error) {
-	f, err := ioutil.ReadFile("input")
+	f, err := ioutil.ReadFile(path)
 	if err != nil {
 		println(err.Error())
 		return "", err
