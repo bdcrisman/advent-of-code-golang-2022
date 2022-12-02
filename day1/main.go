@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -15,6 +16,11 @@ func main() {
 	}
 
 	caloriesPerElf := parseCaloriesPerElf(content)
+	Day1(caloriesPerElf)
+	Day2(caloriesPerElf, 3)
+}
+
+func Day1(caloriesPerElf []int) {
 	highestCalorieElf := highestCaloricElf(caloriesPerElf)
 
 	if highestCalorieElf < 0 {
@@ -23,6 +29,11 @@ func main() {
 	}
 
 	fmt.Printf("Highest caloric elf is elf #%d with %d calories\n", highestCalorieElf, caloriesPerElf[highestCalorieElf])
+}
+
+func Day2(caloriesPerElf []int, nElves int) {
+	sumOfTopElves := sumTopElvesCalories(caloriesPerElf, nElves)
+	fmt.Printf("Top %d elves have a total of %d calories", nElves, sumOfTopElves)
 }
 
 func getInput(path string) (string, error) {
@@ -72,4 +83,21 @@ func highestCaloricElf(caloriesPerElf []int) int {
 	}
 
 	return index
+}
+
+func sumTopElvesCalories(caloriesPerElf []int, nElves int) int {
+	if len(caloriesPerElf) <= 0 || nElves > len(caloriesPerElf) {
+		return -1
+	}
+
+	sort.Slice(caloriesPerElf, func(i, j int) bool {
+		return caloriesPerElf[i] > caloriesPerElf[j]
+	})
+
+	sum := 0
+	for i := 0; i < nElves; i++ {
+		sum += caloriesPerElf[i]
+	}
+
+	return sum
 }
