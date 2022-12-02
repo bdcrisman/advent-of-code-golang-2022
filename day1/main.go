@@ -16,11 +16,11 @@ func main() {
 	}
 
 	caloriesPerElf := parseCaloriesPerElf(content)
-	Day1(caloriesPerElf)
-	Day2(caloriesPerElf, 3)
+	Part1(caloriesPerElf)
+	Part2(caloriesPerElf, 3)
 }
 
-func Day1(caloriesPerElf []int) {
+func Part1(caloriesPerElf []int) {
 	highestCalorieElf := highestCaloricElf(caloriesPerElf)
 
 	if highestCalorieElf < 0 {
@@ -31,7 +31,7 @@ func Day1(caloriesPerElf []int) {
 	fmt.Printf("Highest caloric elf is elf #%d with %d calories\n", highestCalorieElf, caloriesPerElf[highestCalorieElf])
 }
 
-func Day2(caloriesPerElf []int, nElves int) {
+func Part2(caloriesPerElf []int, nElves int) {
 	sumOfTopElves := sumTopElvesCalories(caloriesPerElf, nElves)
 	fmt.Printf("Top %d elves have a total of %d calories", nElves, sumOfTopElves)
 }
