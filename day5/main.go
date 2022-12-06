@@ -3,6 +3,7 @@ package main
 import (
 	"io/ioutil"
 	"log"
+	"sort"
 	"strings"
 )
 
@@ -22,4 +23,10 @@ func getInput(path string) ([]string, error) {
 		return nil, err
 	}
 	return strings.Split(string(f), "\r\n"), err
+}
+
+func ReverseSlice[T comparable](s []T) {
+	sort.SliceStable(s, func(i, j int) bool {
+		return i > j
+	})
 }
