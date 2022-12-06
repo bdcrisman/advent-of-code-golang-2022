@@ -28,15 +28,16 @@ func getInput(path string) ([]string, error) {
 }
 
 func Part1(lines []string) {
-	sum := parseAssignmentPairsPart1(lines)
+	sum := parseAssignmentPairs(lines, true)
 	fmt.Printf("Part 1 sum: %d\n", sum)
 }
 
 func Part2(lines []string) {
-
+	sum := parseAssignmentPairs(lines, false)
+	fmt.Printf("Part 2 sum: %d\n", sum)
 }
 
-func parseAssignmentPairsPart1(lines []string) int {
+func parseAssignmentPairs(lines []string, isPart1 bool) int {
 	sum := 0
 	for _, line := range lines {
 		elf1, elf2 := parsePair(line)
@@ -44,7 +45,12 @@ func parseAssignmentPairsPart1(lines []string) int {
 			continue
 		}
 
-		if containsSlice(elf1, elf2) {
+		if isPart1 && containsSlice(elf1, elf2) {
+			sum++
+			continue
+		}
+
+		if !isPart1 && slicesOverlap(elf1, elf2) {
 			sum++
 		}
 	}
@@ -111,7 +117,32 @@ func containsSlice(slice1, slice2 []int) bool {
 	}
 }
 
-func isEmptyOrNil(slice []int) bool {
-	return slice == nil || len(slice) == 0
+func slicesOverlap(slice1, slice2 []int) bool {
+	if isEmptyOrNil(slice1) || isEmptyOrNil(slice2) {
+		return false
+	}
 
+	if len(slice1) == len(slice2) && slice1[0] == slice2[0] {
+		return true
+	}
+
+	if len(slice1) >= len(slice2) {
+		return isWithinSlice(slice1, slice2[0]) ||
+			isWithinSlice(slice1, slice2[len(slice2)-1])
+	}
+
+	if len(slice2) >= len(slice1) {
+		return isWithinSlice(slice2, slice1[0]) ||
+			isWithinSlice(slice2, slice1[len(slice1)-1])
+	}
+
+	return false
+}
+
+func isEmptyOrNil(slice []int) bool {
+	return len(slice) == 0
+}
+
+func isWithinSlice(slice []int, value int) bool {
+	return value >= slice[0] && value <= slice[len(slice)-1]
 }
