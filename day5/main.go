@@ -4,23 +4,30 @@ import (
 	"io/ioutil"
 	"log"
 	"sort"
+	"strconv"
 	"strings"
 )
 
 func main() {
-	lines, err := getInput("sample-input")
+	lines, err := getInput("input")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	crates, err := parseCrates(lines[0:3], 3)
-	if err != nil {
-		log.Fatal(err)
+	crates := parseCrates(lines[0:8], 9)
+	if len(crates) == 0 {
+		log.Fatal("no crates")
 	}
 
-	for _, crate := range crates {
-		println(crate)
+	moves := parseMoves(lines[10:])
+	if len(moves) == 0 {
+		log.Fatal("no moves")
 	}
+
+	crates = moveCrates(crates, moves)
+	topCrates := getTopChars(crates)
+
+	println(topCrates)
 }
 
 func getInput(path string) ([]string, error) {
@@ -39,9 +46,9 @@ func ReverseSlice[T comparable](s []T) {
 	})
 }
 
-func parseCrates(lines []string, numCols int) ([]string, error) {
+func parseCrates(lines []string, numCols int) []string {
 	if len(lines) == 0 {
-		return nil, nil
+		return nil
 	}
 
 	// start from bottom
@@ -65,5 +72,58 @@ func parseCrates(lines []string, numCols int) ([]string, error) {
 		}
 	}
 
-	return crates, nil
+	return crates
+}
+
+func parseMoves(lines []string) []int {
+	if len(lines) == 0 {
+		return nil
+	}
+
+	moves := make([]int, 0)
+	for _, line := range lines {
+		if line == " " {
+			continue
+		}
+
+		splits := strings.Split(line, " ")
+		move, _ := strconv.Atoi(splits[1])
+		from, _ := strconv.Atoi(splits[3])
+		to, _ := strconv.Atoi(splits[5])
+
+		moves = append(moves, move, from-1, to-1)
+	}
+
+	return moves
+}
+
+func moveCrates(crates []string, moves []int) []string {
+	for i := 0; i < len(moves); i += 3 {
+		nCrates := moves[i]
+		from := moves[i+1]
+		to := moves[i+2]
+
+		// fmt.Printf("%d: %d: %d\n", nCrates, from, to)
+		for j := 0; j < nCrates; j++ {
+			crates[to] += string(crates[from][len(crates[from])-1])
+			crates[from] = string(crates[from][:len(crates[from])-1]) //removeLastRune(crates[from])
+
+			// fmt.Printf("to: %s :: from: %s\n", crates[to], crates[from])
+		}
+	}
+
+	return crates
+}
+
+func removeLastRune(s string) string {
+	r := []rune(s)
+	return string(r[:len(r)-1])
+}
+
+func getTopChars(crates []string) string {
+	s := ""
+	for _, crate := range crates {
+		s += string(crate[len(crate)-1])
+	}
+	return s
 }
