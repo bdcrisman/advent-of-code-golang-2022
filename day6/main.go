@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	input, err := getInput("sample-input")
+	input, err := getInput("input")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -41,7 +41,7 @@ func findMarker(input string, dataLen int) int {
 	for i, r := range input {
 		substr += string(r)
 		if isMarker(substr, dataLen) {
-			return i
+			return i + 1
 		}
 	}
 
@@ -54,16 +54,14 @@ func isMarker(s string, dataLen int) bool {
 	}
 
 	m := make(map[string]bool)
-	count := 0
+	substr := s[len(s)-dataLen:]
 
-	for i := len(s) - 1; count <= dataLen; i-- {
-		key := string(s[i])
+	for _, r := range substr {
+		key := string(r)
 		if _, keyExists := m[key]; keyExists {
 			return false
-		} else {
-			m[key] = true
 		}
-		count++
+		m[key] = true
 	}
 
 	return true
