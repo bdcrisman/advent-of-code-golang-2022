@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"sort"
@@ -19,15 +20,19 @@ func main() {
 		log.Fatal("no crates")
 	}
 
+	// src: https://stackoverflow.com/questions/27055626/concisely-deep-copy-a-slice
+	cratesPart1 := make([]string, len(crates))
+	cratesPart2 := make([]string, len(crates))
+	copy(cratesPart1, crates)
+	copy(cratesPart2, crates)
+
 	moves := parseMoves(lines[10:])
 	if len(moves) == 0 {
 		log.Fatal("no moves")
 	}
 
-	crates = moveCrates(crates, moves)
-	topCrates := getTopChars(crates)
-
-	println(topCrates)
+	Part1(cratesPart1, moves)
+	Part2(cratesPart2, moves)
 }
 
 func getInput(path string) ([]string, error) {
@@ -37,6 +42,18 @@ func getInput(path string) ([]string, error) {
 		return nil, err
 	}
 	return strings.Split(string(f), "\r\n"), err
+}
+
+func Part1(crates []string, moves []int) {
+	movedCrates := moveCratesPart1(crates, moves)
+	topCrates := getTopChars(movedCrates)
+	fmt.Printf("Part 1, top crates: %s\n", topCrates)
+}
+
+func Part2(crates []string, moves []int) {
+	crates = moveCratesPart2(crates, moves)
+	topCrates := getTopChars(crates)
+	fmt.Printf("Part 2, top crates: %s\n", topCrates)
 }
 
 // source: https://stackoverflow.com/questions/28058278/how-do-i-reverse-a-slice-in-go
@@ -97,22 +114,47 @@ func parseMoves(lines []string) []int {
 	return moves
 }
 
-func moveCrates(crates []string, moves []int) []string {
+func moveCratesPart1(crates []string, moves []int) []string {
 	for i := 0; i < len(moves); i += 3 {
 		nCrates := moves[i]
 		from := moves[i+1]
 		to := moves[i+2]
 
-		// fmt.Printf("%d: %d: %d\n", nCrates, from, to)
 		for j := 0; j < nCrates; j++ {
 			crates[to] += string(crates[from][len(crates[from])-1])
-			crates[from] = string(crates[from][:len(crates[from])-1]) //removeLastRune(crates[from])
-
-			// fmt.Printf("to: %s :: from: %s\n", crates[to], crates[from])
+			crates[from] = string(crates[from][:len(crates[from])-1])
 		}
 	}
 
 	return crates
+}
+
+func moveCratesPart2(crates []string, moves []int) []string {
+	for i := 0; i < len(moves); i += 3 {
+		nCrates := moves[i]
+		from := moves[i+1]
+		to := moves[i+2]
+
+		pile := ""
+		for j := 0; j < nCrates; j++ {
+			lenFrom := len(crates[from]) - 1
+			pile += string(crates[from][lenFrom])
+			crates[from] = string(crates[from][:lenFrom])
+		}
+		pile = reverseString(pile)
+		crates[to] += pile
+	}
+
+	return crates
+}
+
+// src: https://www.geeksforgeeks.org/how-to-reverse-a-string-in-golang/
+func reverseString(s string) string {
+	rns := []rune(s)
+	for i, j := 0, len(rns)-1; i < j; i, j = i+1, j-1 {
+		rns[i], rns[j] = rns[j], rns[i]
+	}
+	return string(rns)
 }
 
 func removeLastRune(s string) string {
